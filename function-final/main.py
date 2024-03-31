@@ -7,10 +7,12 @@ from datetime import datetime
 import os
 
 # Fetch environment variables
-DB_HOST = os.environ.get("DB_HOST")
+DB_HOST = os.environ.get("DB_HOST") 
 DB_USER = os.environ.get("DB_USER")
 DB_PASSWORD = os.environ.get("DB_PASSWORD")
 DB_NAME = os.environ.get("DB_NAME")
+API_KEY = os.environ.get("API_KEY")
+APP_IP   = os.environ.get("IP")
 
 # Triggered from a message on a Cloud Pub/Sub topic.
 @functions_framework.cloud_event
@@ -24,11 +26,49 @@ def hello_pubsub(cloud_event):
     send_simple_message(email, token)
 
 def send_simple_message(email, token):
-    verification_link = f"http://abhinavpandey.tech:3000/v1/user/verify/{token}"
-    html_content = f"<p>Click <a href='{verification_link}'>here</a> to verify your account.</p>"
-    # Print out the decoded data
-    print(verification_link)
-    print(html_content)
+    verification_link = f"http://{APP_IP}:3000/v1/user/verify/{token}"
+    html_content = f"""
+    <html>
+    <head>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                padding: 20px;
+            }}
+            .container {{
+                max-width: 600px;
+                margin: 0 auto;
+                background-color: #f9f9f9;
+                border-radius: 10px;
+                padding: 40px;
+                text-align: center;
+            }}
+            h1 {{
+                color: #333;
+            }}
+            p {{
+                color: #666;
+                margin-bottom: 20px;
+            }}
+            .btn {{
+                display: inline-block;
+                background-color: #007bff;
+                color: #fff;
+                text-decoration: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>User Verification</h1>
+            <p>Welcome! To complete your registration, please click the button below:</p>
+            <a class="btn" href="{verification_link}">Verify Account</a>
+        </div>
+    </body>
+    </html>
+    """
     
     try:
         response = requests.post(
