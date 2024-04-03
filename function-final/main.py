@@ -12,7 +12,6 @@ DB_USER = os.environ.get("DB_USER")
 DB_PASSWORD = os.environ.get("DB_PASSWORD")
 DB_NAME = os.environ.get("DB_NAME")
 API_KEY = os.environ.get("API_KEY")
-APP_IP   = os.environ.get("IP")
 
 # Triggered from a message on a Cloud Pub/Sub topic.
 @functions_framework.cloud_event
@@ -26,7 +25,7 @@ def hello_pubsub(cloud_event):
     send_simple_message(email, token)
 
 def send_simple_message(email, token):
-    verification_link = f"http://{APP_IP}:3000/v1/user/verify/{token}"
+    verification_link = f"https://abhinavpandey.tech/v1/user/verify/{token}"
     html_content = f"""
     <html>
     <head>
@@ -73,7 +72,7 @@ def send_simple_message(email, token):
     try:
         response = requests.post(
             "https://api.mailgun.net/v3/abhinavpandey.tech/messages",
-            auth=("api","API_key"),
+            auth=("api", API_KEY),
             data={
                 "from": "User Verification <mailgun@abhinavpandey.tech>",
                 "to": [email],
